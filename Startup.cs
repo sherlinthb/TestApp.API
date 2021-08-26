@@ -10,11 +10,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
+using TestApp.API.Models;
 
 namespace TestApp.API
 {
     public class Startup
     {
+        private string _connectionString = null;
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -25,16 +28,25 @@ namespace TestApp.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            _connectionString = Configuration["secretConnectionString"];
             services.AddControllers();
+            services.AddEntityFrameworkSqlServer()
+            .AddDbContext<ApiContext>(
+                option => option.UseSqlServer(_connectionString));
+
+            services.AddTransient<DataSeed>();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DataSeed seed)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            seed.SeedData();
 
             app.UseHttpsRedirection();
 
@@ -46,6 +58,7 @@ namespace TestApp.API
             {
                 endpoints.MapControllers();
             });
+
         }
     }
 }

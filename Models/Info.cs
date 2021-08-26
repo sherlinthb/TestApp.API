@@ -1,3 +1,5 @@
+using System;
+
 namespace TestApp.API.Models
 {
     public class Info
@@ -6,5 +8,9 @@ namespace TestApp.API.Models
         public string category {get;set;}
         public string label {get;set;}
         public string information {get;set;} 
+
+        public DateTime DateTimeCreated {get;set;}
+        public DateTime DateTimeChanged {get;set;}
+
     }
 }
