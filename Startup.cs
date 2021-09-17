@@ -28,6 +28,16 @@ namespace TestApp.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(opt =>
+                {
+                    opt.AddPolicy("CorsPolicy",
+                        b => b.AllowAnyOrigin()
+                                .AllowAnyMethod()
+                                .AllowAnyHeader());
+                                
+
+                }
+            );
             _connectionString = Configuration["secretConnectionString"];
             services.AddControllers();
             services.AddEntityFrameworkSqlServer()
@@ -45,7 +55,7 @@ namespace TestApp.API
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseCors("CorsPolicy");
             seed.SeedData();
 
             app.UseHttpsRedirection();
